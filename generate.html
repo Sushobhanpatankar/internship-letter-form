@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generate Letter — SIMC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: #f8f6f1;
+      padding: 40px 16px;
+    }
+
+    .screen-only {
+      max-width: 640px;
+      margin: 0 auto 40px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 36px 40px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      color: #1a1a2e;
+      font-size: 1.7rem;
+      margin-bottom: 4px;
+    }
+
+    .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 24px; }
+    hr { border: none; border-top: 1px solid #e0e0e0; margin-bottom: 24px; }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      font-size: 0.88rem;
+      margin-bottom: 5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 9px 13px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.93rem;
+      color: #222;
+      background: #fafafa;
+      margin-bottom: 18px;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #1a1a2e;
+      background: white;
+    }
+
+    .btn-row { display: flex; gap: 12px; }
+
+    button {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    #previewBtn { background: #1a1a2e; color: white; }
+    #previewBtn:hover { background: #2d2d5e; }
+    #printBtn { background: #2e7d32; color: white; display: none; }
+    #printBtn:hover { background: #1b5e20; }
+
+    /* ── Letter preview (screen) ── */
+    #letterWrap {
+      display: none;
+      max-width: 720px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 56px 64px;
+      font-family: Calibri, Arial, sans-serif;
+      font-size: 13.5px;
+      line-height: 1.8;
+      color: #222;
+    }
+
+    #letterWrap .header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 36px;
+      font-size: 13px;
+    }
+
+    #letterWrap .body p { margin: 14px 0; text-align: justify; }
+    #letterWrap .sig { margin-top: 48px; font-size: 13px; }
+    #letterWrap .sig-name { font-weight: bold; margin-bottom: 2px; }
+
+    /* ── Print styles ── */
+    @media print {
+      body { background: white; padding: 0; }
+      .screen-only { display: none !important; }
+
+      #letterWrap {
+        display: block !important;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+        max-width: 100%;
+        /* top margin leaves room for your letterhead */
+        padding-top: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="screen-only">
+    <h1>🖨️ Generate Letter</h1>
+    <p class="subtitle">For office use — enter student details to preview and print</p>
+    <hr />
+
+    <label for="student_name">Student Full Name</label>
+    <input type="text" id="student_name" placeholder="As per records" />
+
+    <label for="prn">PRN</label>
+    <input type="text" id="prn" placeholder="PRN number" />
+
+    <label for="gender">Gender</label>
+    <select id="gender">
+      <option value="">-- Select --</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <div class="btn-row">
+      <button id="previewBtn" onclick="preview()">Preview Letter</button>
+      <button id="printBtn" onclick="window.print()">🖨️ Print</button>
+    </div>
+  </div>
+
+  <div id="letterWrap"></div>
+
+  <script>
+    const FROM_NAME  = "Sushobhan Patankar";
+    const FROM_TITLE = "Professor and Deputy Director";
+    const INST       = "Symbiosis Institute of Media and Communication";
+    const ADDR1      = "Symbiosis International University";
+    const ADDR2      = "Post: Lavale, Tal: Mulshi, District: Pune";
+
+    function getPronouns(gender) {
+      if (gender === "Male")   return { pronoun: "He",   possessive: "his",   salutation: "Dear Sir",       title: "Mr."     };
+      if (gender === "Female") return { pronoun: "She",  possessive: "her",   salutation: "Dear Madam",     title: "Ms."     };
+      return                          { pronoun: "They", possessive: "their", salutation: "Dear Sir/Madam", title: "Mr./Ms." };
+    }
+
+    function formatDate() {
+      return new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+    }
+
+    function preview() {
+      const name   = document.getElementById("student_name").value.trim();
+      const prn    = document.getElementById("prn").value.trim();
+      const gender = document.getElementById("gender").value;
+
+      if (!name || !prn || !gender) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const p    = getPronouns(gender);
+      const date = formatDate();
+
+      document.getElementById("letterWrap").innerHTML = `
+        <div class="header">
+          <div>
+            <strong>From</strong><br>
+            ${FROM_NAME}<br>${FROM_TITLE}<br>${INST}<br>${ADDR1}<br>${ADDR2}
+          </div>
+          <div style="text-align:right">
+            <strong>Date</strong><br>${date}
+          </div>
+        </div>
+
+        <p>To whomsoever it may concern</p>
+
+        <div class="body">
+          <p>${p.salutation},</p>
+          <p>This is to certify that <strong>${name}</strong> (PRN: ${prn}) is a bonafide student of
+          Symbiosis Institute of Media and Communication, Pune.
+          ${p.pronoun} is pursuing MA (Journalism and Media Industries).</p>
+          <p>As a part of the curriculum, students are expected to do an internship training at a
+          media organisation. The institute has no objection to ${p.possessive} internship training
+          at your prestigious news organization.</p>
+          <p>Thank You</p>
+        </div>
+
+        <div class="sig">
+          <div class="sig-name">${FROM_NAME}</div>
+          <div>${FROM_TITLE}</div>
+          <div style="color:#555;font-size:12px;">${INST}</div>
+        </div>
+      `;
+
+      document.getElementById("letterWrap").style.display = "block";
+      document.getElementById("printBtn").style.display   = "block";
+      document.getElementById("letterWrap").scrollIntoView({ behavior: "smooth" });
+    }
+  </script>
+</body>
+</html>
