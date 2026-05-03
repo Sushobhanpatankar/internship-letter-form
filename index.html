@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMC Student Services</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: #f8f6f1;
+      min-height: 100vh;
+      padding: 48px 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      color: #1a1a2e;
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: #888;
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 32px 28px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: block;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    }
+
+    .card-icon { font-size: 2rem; margin-bottom: 14px; }
+
+    .card h2 {
+      font-family: 'Playfair Display', serif;
+      color: #1a1a2e;
+      font-size: 1.15rem;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: #777;
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .card .tag {
+      display: inline-block;
+      margin-top: 16px;
+      background: #f0eefc;
+      color: #3730a3;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 56px;
+      color: #bbb;
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>SIMC Student Services</h1>
+    <p>Symbiosis Institute of Media and Communication — online request forms</p>
+  </header>
+
+  <div class="grid">
+
+    <a class="card" href="bonafide.html">
+      <div class="card-icon">📄</div>
+      <h2>Internship / Bonafide Letter</h2>
+      <p>Request a bonafide certificate for internship applications at media organisations.</p>
+      <span class="tag">MA Journalism</span>
+    </a>
+
+    <!-- Add more form cards here as new forms are created -->
+
+  </div>
+
+  <footer>
+    &copy; Symbiosis Institute of Media and Communication &nbsp;·&nbsp; For queries contact the office
+  </footer>
+
+</body>
+</html>

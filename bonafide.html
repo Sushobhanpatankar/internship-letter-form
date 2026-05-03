@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Internship / Bonafide Letter — SIMC</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: #f8f6f1;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 16px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 40px;
+      width: 100%;
+      max-width: 640px;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 20px;
+      font-size: 0.85rem;
+      color: #666;
+      text-decoration: none;
+    }
+    .back:hover { color: #1a1a2e; }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      color: #1a1a2e;
+      font-size: 1.9rem;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+
+    hr { border: none; border-top: 1px solid #e0e0e0; margin-bottom: 28px; }
+
+    label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.95rem;
+      color: #222;
+      background: #fafafa;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #1a1a2e;
+      background: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #1a1a2e;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: #2d2d5e; }
+    button:disabled { background: #888; cursor: not-allowed; }
+
+    .msg {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-weight: 500;
+      display: none;
+      line-height: 1.6;
+    }
+
+    .msg.success {
+      background: #e8f5e9;
+      border-left: 4px solid #2e7d32;
+      color: #1b5e20;
+    }
+
+    .msg.error {
+      background: #ffebee;
+      border-left: 4px solid #c62828;
+      color: #b71c1c;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <a class="back" href="index.html">← All forms</a>
+
+    <h1>📄 Internship / Bonafide Letter</h1>
+    <p class="subtitle">Symbiosis Institute of Media and Communication</p>
+    <hr />
+
+    <form id="letterForm" novalidate>
+      <label for="student_name">Full Name</label>
+      <input type="text" id="student_name" placeholder="As per institute records" required />
+
+      <label for="prn">PRN</label>
+      <input type="text" id="prn" placeholder="Your PRN number" required />
+
+      <label for="student_email">Your Email Address</label>
+      <input type="email" id="student_email" placeholder="Your college or personal email" required />
+
+      <label for="gender">Gender</label>
+      <select id="gender" required>
+        <option value="">-- Select --</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <button type="submit" id="submitBtn">Submit Request</button>
+    </form>
+
+    <div class="msg" id="msgBox"></div>
+  </div>
+
+  <script>
+    // ── Replace these three values after setting up EmailJS ──────────────────
+    const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";
+    const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";
+    const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+    // ─────────────────────────────────────────────────────────────────────────
+
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+
+    function getPronouns(gender) {
+      if (gender === "Male")   return { pronoun: "He",   possessive: "his",   salutation: "Dear Sir",        title: "Mr."     };
+      if (gender === "Female") return { pronoun: "She",  possessive: "her",   salutation: "Dear Madam",      title: "Ms."     };
+      return                          { pronoun: "They", possessive: "their", salutation: "Dear Sir/Madam",  title: "Mr./Ms." };
+    }
+
+    function formatDate() {
+      return new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" });
+    }
+
+    document.getElementById("letterForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name   = document.getElementById("student_name").value.trim();
+      const prn    = document.getElementById("prn").value.trim();
+      const email  = document.getElementById("student_email").value.trim();
+      const gender = document.getElementById("gender").value;
+      const btn    = document.getElementById("submitBtn");
+
+      if (!name || !prn || !email || !gender) {
+        showMsg("error", "⚠️ Please fill in all fields before submitting.");
+        return;
+      }
+
+      const p = getPronouns(gender);
+
+      const params = {
+        student_name:  name,
+        prn:           prn,
+        student_email: email,   // used as Reply-To in the EmailJS template
+        gender:        gender,
+        title:         p.title,
+        salutation:    p.salutation,
+        pronoun:       p.pronoun,
+        possessive:    p.possessive,
+        date:          formatDate(),
+      };
+
+      btn.disabled    = true;
+      btn.textContent = "Sending…";
+
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+        showMsg(
+          "success",
+          "✅ Your request has been submitted successfully!<br><br>" +
+          "Your bonafide letter will be ready for collection from the institute " +
+          "<strong>tomorrow or the next working day</strong>. " +
+          "Please visit the office during working hours to collect it."
+        );
+        document.getElementById("letterForm").reset();
+      } catch (err) {
+        showMsg("error", "❌ Could not send request: " + (err.text || err.message || "Please try again."));
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = "Submit Request";
+      }
+    });
+
+    function showMsg(type, html) {
+      const box       = document.getElementById("msgBox");
+      box.className   = "msg " + type;
+      box.innerHTML   = html;
+      box.style.display = "block";
+      box.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  </script>
+</body>
+</html>
